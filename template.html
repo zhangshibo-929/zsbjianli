@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ name }} · 求职看板</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<style>
+  :root{
+    --ink:#2f3a33; --accent:#b5652a; --green:#4a6b5a; --paper:#f4f1ea;
+    --line:#e5e0d3; --muted:#8a8578;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--paper);color:#2b2b28;line-height:1.6;padding:24px}
+  .wrap{max-width:1200px;margin:0 auto}
+  /* 头图 */
+  .hero{background:linear-gradient(135deg,#2f3a33 0%,#3d4a41 60%,#4a6b5a 100%);color:#f5f2ec;border-radius:18px;padding:36px 40px;position:relative;overflow:hidden;margin-bottom:22px}
+  .hero::after{content:"";position:absolute;right:-60px;top:-60px;width:240px;height:240px;border-radius:50%;background:rgba(181,101,42,.18)}
+  .hero::before{content:"";position:absolute;right:40px;bottom:-80px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.06)}
+  .hero h1{font-size:28px;font-weight:700;letter-spacing:1px}
+  .hero .sub{margin-top:8px;font-size:14px;opacity:.85}
+  .hero .chips{margin-top:18px;display:flex;flex-wrap:wrap;gap:8px;position:relative;z-index:1}
+  .chip{background:rgba(255,255,255,.13);padding:5px 14px;border-radius:20px;font-size:12.5px;backdrop-filter:blur(4px)}
+  .chip.hot{background:var(--accent)}
+  /* 统计卡 */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+  .stat{background:#fff;border-radius:14px;padding:20px 22px;box-shadow:0 2px 8px rgba(0,0,0,.05);border-top:3px solid var(--green)}
+  .stat.p1{border-top-color:var(--accent)}
+  .stat .num{font-size:30px;font-weight:800;color:var(--ink);line-height:1}
+  .stat.p1 .num{color:var(--accent)}
+  .stat .lbl{font-size:12.5px;color:var(--muted);margin-top:6px}
+  /* 图表区 */
+  .charts{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:22px}
+  .card{background:#fff;border-radius:14px;padding:20px 22px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+  .card h3{font-size:15px;font-weight:700;color:var(--ink)}
+  .card .desc{font-size:12px;color:var(--muted);margin:2px 0 8px}
+  .chart{width:100%;height:280px}
+  /* 能力画像 */
+  .profile{background:#fff;border-radius:14px;padding:22px 24px;box-shadow:0 2px 8px rgba(0,0,0,.05);margin-bottom:22px}
+  .profile h3{font-size:16px;font-weight:700;color:var(--ink);margin-bottom:12px}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .col h4{font-size:13px;color:var(--green);margin-bottom:8px;font-weight:600}
+  .col.weak h4{color:var(--accent)}
+  .col ul{list-style:none}
+  .col li{font-size:13.5px;padding:6px 0;border-bottom:1px dashed var(--line)}
+  /* 梯队 */
+  .tier-title{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:700;margin:26px 0 14px;padding-left:14px;border-left:5px solid var(--accent)}
+  .tier-title .pill{font-size:12px;font-weight:500;color:#fff;background:var(--accent);padding:3px 12px;border-radius:12px}
+  .tier-title.t2{border-left-color:var(--green)} .tier-title.t2 .pill{background:var(--green)}
+  .tier-title.t3{border-left-color:#b0a998} .tier-title.t3 .pill{background:#b0a998}
+  .jobs{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .job{background:#fff;border-radius:12px;padding:16px 18px;border-left:4px solid var(--accent);box-shadow:0 1px 4px rgba(0,0,0,.04);transition:transform .15s}
+  .job:hover{transform:translateY(-2px)}
+  .job.t2j{border-left-color:var(--green)}
+  .job.t3j{border-left-color:#b0a998}
+  .job .top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+  .job .name{font-size:14.5px;font-weight:600;color:#2b2b28}
+  .job .co{font-size:12px;color:var(--muted);margin-top:2px}
+  .job .score{font-size:14px;font-weight:800;color:var(--accent);white-space:nowrap}
+  .job.t2j .score{color:var(--green)}
+  .job .meta{font-size:12.5px;color:#555;margin:8px 0}
+  .job .meta span{margin-right:10px}
+  .job .tags{margin:6px 0}
+  .job .tags span{display:inline-block;font-size:11px;background:var(--paper);color:#666;padding:2px 9px;border-radius:10px;margin-right:5px}
+  .job a.link{display:inline-block;margin-top:8px;font-size:12.5px;color:var(--ink);text-decoration:none;border:1px solid var(--ink);padding:4px 14px;border-radius:16px;transition:.15s}
+  .job a.link:hover{background:var(--ink);color:#fff}
+  footer{text-align:center;font-size:12px;color:#aaa;margin-top:30px;padding-bottom:20px}
+  @media(max-width:860px){.stats,.charts,.jobs,.cols{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <h1>{{ name }} · {{ city }}求职看板</h1>
+    <div class="sub">{{ school }} · {{ major }} · {{ degree }} · {{ graduation }} · {{ tagline }}</div>
+    <div class="chips">
+      {% for s in skills %}<span class="chip {% if loop.index <= 3 %}hot{% endif %}">{{ s }}</span>{% endfor %}
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat p1"><div class="num">{{ total }}</div><div class="lbl">匹配岗位总数</div></div>
+    <div class="stat p1"><div class="num">{{ t1 }}</div><div class="lbl">P1 立即投递</div></div>
+    <div class="stat"><div class="num">{{ t2 }}</div><div class="lbl">P2 重点投递</div></div>
+    <div class="stat"><div class="num">{{ t3 }}</div><div class="lbl">P3 补充投递</div></div>
+  </div>
+
+  <div class="charts">
+    <div class="card">
+      <h3>岗位城市分布</h3>
+      <div class="desc">匹配岗位按城市 · 前10</div>
+      <div id="citychart" class="chart"></div>
+    </div>
+    <div class="card">
+      <h3>招聘类型分布</h3>
+      <div class="desc">秋招 / 实习 / 社招占比</div>
+      <div id="typechart" class="chart"></div>
+    </div>
+  </div>
+
+  <div class="profile">
+    <h3>能力画像</h3>
+    <div class="cols">
+      <div class="col">
+        <h4>✅ 现有技能</h4>
+        <ul>{% for s in skills %}<li>{{ s }}</li>{% endfor %}</ul>
+      </div>
+      <div class="col weak">
+        <h4>⚠ 待补短板</h4>
+        <ul>{% for w in weaknesses %}<li>{{ w }}</li>{% endfor %}</ul>
+      </div>
+    </div>
+  </div>
+
+  {% for group_name, group_label in [("对口","相关专业对口"),("不限","不限专业可投")] %}
+  {% set gjobs = jobs|selectattr("major_group","equalto",group_name)|list %}
+  {% if gjobs|length > 0 %}
+  <div style="margin:30px 0 14px;padding:14px 20px;background:#2f3a33;color:#f5f2ec;border-radius:12px;font-size:17px;font-weight:700;">
+    {{ group_label }} <span style="font-size:12px;font-weight:400;opacity:.8;margin-left:8px;">共 {{ gjobs|length }} 个</span>
+  </div>
+    {% for code, label in [("P1","立即投递"),("P2","重点投递"),("P3","补充投递")] %}
+    {% set tjobs = gjobs|selectattr("tier","equalto",code)|list %}
+    {% if tjobs|length > 0 %}
+    <div class="tier-title {{ 't2' if code=='P2' else ('t3' if code=='P3' else '') }}">{{ label }}<span class="pill">{{ tjobs|length }} 个</span></div>
+    <div class="jobs">
+      {% for j in tjobs %}
+      <div class="job {{ 't2j' if code=='P2' else ('t3j' if code=='P3' else '') }}">
+        <div class="top">
+          <div><div class="name">{{ j.title }}</div><div class="co">{{ j.company }}</div></div>
+          <div class="score">{{ j.score }}分</div>
+        </div>
+        <div class="meta"><span>📍{{ j.city }}</span><span>📋{{ j.type }}</span>{% if j.salary and j.salary!='详见官网' %}<span>💰{{ j.salary }}</span>{% endif %}</div>
+        <div class="tags">{% for t in j.tags %}<span>{{ t }}</span>{% endfor %}</div>
+        <a class="link" href="{{ j.url }}" target="_blank">前往投递 ↗</a>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% endfor %}
+  {% endif %}
+  {% endfor %}
+
+  <footer>数据更新 {{ update_date }} · 岗位以官网实时为准 · 投递前再确认</footer>
+</div>
+
+<script>
+(function(){
+  var c1 = echarts.init(document.getElementById('citychart'));
+  c1.setOption({
+    backgroundColor:'transparent',
+    tooltip:{trigger:'item',triggerOn:'click',renderMode:'richText',confine:true},
+    legend:{bottom:0,type:'scroll',textStyle:{fontSize:11}},
+    series:[{type:'pie',radius:['38%','65%'],center:['50%','45%'],
+      itemStyle:{borderColor:'#fff',borderWidth:2},
+      label:{fontSize:11,formatter:'{b}:{c}'},
+      data:{{ city_dist|safe }}
+    }]
+  });
+  var c2 = echarts.init(document.getElementById('typechart'));
+  c2.setOption({
+    backgroundColor:'transparent',
+    tooltip:{trigger:'axis',triggerOn:'click',renderMode:'richText',confine:true},
+    grid:{left:40,right:20,top:20,bottom:30,containLabel:true},
+    xAxis:{type:'category',data:{{ type_dist|safe }}.map(function(d){return d.name}),axisLabel:{fontSize:11}},
+    yAxis:{type:'value',axisLabel:{fontSize:11}},
+    series:[{type:'bar',barWidth:'45%',itemStyle:{color:'#4a6b5a',borderRadius:[4,4,0,0]},
+      data:{{ type_dist|safe }}.map(function(d){return d.value})}]
+  });
+  window.addEventListener('resize',function(){c1.resize();c2.resize();});
+})();
+</script>
+</body>
+</html>

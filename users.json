@@ -1,0 +1,43 @@
+{
+  "users": [
+    {
+      "slug": "zhangshibo",
+      "name": "张世博",
+      "school": "攀枝花学院",
+      "major": "环境设计",
+      "degree": "本科",
+      "graduation": "2027届",
+      "city": "成都",
+      "skills": ["SU","D5","CAD","PS","Lumion","3ds Max","AI工作流","效果图渲染"],
+      "weakness": ["施工图深化","施工工艺","Rhino","快题手绘"],
+      "portfolio": "",
+      "tagline": "室内/景观/建筑空间表现 · ICAD铜奖"
+    },
+    {
+      "slug": "lisi_cs",
+      "name": "李示例",
+      "school": "示例大学",
+      "major": "计算机",
+      "degree": "本科",
+      "graduation": "2027届",
+      "city": "成都",
+      "skills": ["Java","Python","前端"],
+      "weakness": ["项目经验"],
+      "portfolio": "",
+      "tagline": "后端开发方向"
+    },
+    {
+      "slug": "wangwu_finance",
+      "name": "王示例",
+      "school": "示例大学",
+      "major": "金融",
+      "degree": "本科",
+      "graduation": "2027届",
+      "city": "成都",
+      "skills": ["会计","财务分析"],
+      "weakness": ["实习经历"],
+      "portfolio": "",
+      "tagline": "金融/财会方向"
+    }
+  ]
+}
